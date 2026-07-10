@@ -5,6 +5,7 @@ from tokenizers import Tokenizer
 import wandb
 import os
 from model import Transformer
+from peft import LoraConfig, get_peft_model
 
 # for reproducability
 torch.manual_seed(873947)
@@ -48,7 +49,7 @@ seq_len = 128
 nhead = 4
 n_layers = 6
 batch_size = 16
-lr = 1e-5
+lr = 2e-4
 n_steps = 5000
 eval_every = 200
 # tells model to ignore the ME: messages? loss masking? 
@@ -121,6 +122,16 @@ model = Transformer(vocab_size, d_model, seq_len, nhead, n_layers).to(device)
 # starts fine-tuning from where the pre-training left off
 model.load_state_dict(torch.load('checkpoints/best.pt', map_location=device))
 
+# configuring LoRA for finetuning
+config = LoraConfig(
+    r=16, lora_alpha=16, lora_dropout=0.05,
+    target_modules=["q_proj","k_proj","v_proj","o_proj",
+                    "gate_proj","up_proj","down_proj", "linear"]
+)
+model = get_peft_model(model, config)
+model.print_trainable_parameters()
+
+
 # loss function. tells it which things to ignore
 loss_fn = nn.CrossEntropyLoss(ignore_index=IGNORE_INDEX)
 # weight decay slowly pushes weights towards zero so they don't overfit
@@ -180,6 +191,8 @@ for step in range(n_steps):
         if losses['val'] < best_val_loss:
             best_val_loss = losses['val']
             torch.save(model.state_dict(), 'checkpoints_ft/best.pt')
+
+
 
 # end wandb
 wandb.finish()

@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.DS_Store
+checkpoints/
+checkpoints_ft/
+*.pt
+*.pth
+wandb/
+data/
+cleaned_dataset_test/
+cleaned_dataset_train/
