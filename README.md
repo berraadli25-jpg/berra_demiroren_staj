@@ -1,4 +1,4 @@
-# beta_berra
+# Berra's Transformer-based AI
 
 A GPT-style transformer built from scratch in PyTorch, pretrained on WikiText-2, then finetuned on my own iMessage data to generate text in my conversational style.
 
