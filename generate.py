@@ -18,7 +18,7 @@ n_layers = 6
 
 # set up model and load all the correct weights from the end of fine-tuning
 model = Transformer(vocab_size, d_model, seq_len, nhead, n_layers).to(device)
-model.load_state_dict(torch.load('checkpoints/best.pt', map_location=device))
+model.load_state_dict(torch.load('checkpoints_ft/merged_best.pt', map_location=device))
 model.eval()
 
 # turns off gradient computation
